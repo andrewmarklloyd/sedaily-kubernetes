@@ -19,6 +19,9 @@ spec:
         - name: sedaily-mongo
           image: "softwaredaily/sedaily-mongo:develop"
           imagePullPolicy: IfNotPresent
+        - name: sedaily-influx
+          image: "influxdb:1.4.3"
+          imagePullPolicy: IfNotPresent
         - name: sedaily-devops
           image: "softwaredaily/sedaily-devops:develop"
           imagePullPolicy: IfNotPresent

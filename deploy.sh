@@ -58,7 +58,8 @@ function applySecrets() {
     rm -f ${secret_template}
     rm -f secrets.yaml
     touch ${secret_template}
-    echo "secrets:" > ${secret_template}
+    echo "name: ${sec}" > ${secret_template}
+    echo "secrets:" >> ${secret_template}
     while IFS=\= read key value
     do
       encodedValue=$(echo -n ${value} | base64)
