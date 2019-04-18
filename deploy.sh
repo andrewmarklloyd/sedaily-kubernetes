@@ -3,16 +3,8 @@
 namespace="sedaily"
 deploymentName="sedaily"
 serviceName="sedaily"
-secretsName="sedaily"
 kube="kubectl -n ${namespace}"
 
-function createNamespace() {
-  kubectl create -f namespace.yaml
-}
-
-function deleteNamespace() {
-  kubectl delete -f namespace.yaml
-}
 
 function createDeployment() {
   deploymentFile="deployment.yaml"
@@ -32,17 +24,15 @@ function createDeployment() {
   done
   gotpl "./deployment.yaml.tpl" < ${secret_template} > ${deploymentFile}
   ${kube} apply -f ${deploymentFile}
-  rm ${deploymentFile}
+  # rm ${deploymentFile}
   rm ${secret_template}
 }
 
-function deleteDeployment() {
-  ${kube} delete deployment ${deploymentName}
-}
-
 function createService() {
-  ${kube} expose deployment ${deploymentName} --type=LoadBalancer --port=4040 --name=sedaily
-  minikube -n sedaily service sedaily
+  ${kube} expose deployment ${deploymentName} --type=LoadBalancer --port=4040 --name=sedaily-api
+  ${kube} expose deployment ${deploymentName} --type=LoadBalancer --port=4040 --name=sedaily-devops
+  minikube -n sedaily service sedaily-api
+  minikube -n sedaily service sedaily-devops
 }
 
 function applySecrets() {
@@ -72,29 +62,8 @@ function applySecrets() {
   done
 }
 
-function podInfo() {
-  pods=$(${kube} get pods)
-  echo "$pods"
-  pod1=$(echo "$pods" | sed -n 2p | awk '{print $1}')
-  ${kube} logs "$pod1" sedaily-api
-  ${kube} describe pod $pod1 -n ${namespace}
-}
-
 function configureMinikubeEnvironment() {
   eval $(minikube docker-env)
-}
-
-function cleanup() {
-  deleteDeployment
-  deleteSecrets
-  deleteNamespace
-}
-
-function createAll() {
-  createNamespace
-  applySecrets
-  createDeployment
-  createService
 }
 
 if [[ -z $DOCKER_HOST ]]; then
@@ -102,26 +71,15 @@ if [[ -z $DOCKER_HOST ]]; then
   exit 1
 fi
 
-if [[ ${1} == 'create' ]]; then
-  createAll $@
+
+if [[ ${1} == 'minikube-config' ]]; then
+  configureMinikubeEnvironment
+elif [[ ${1} == 'secrets' ]]; then
+  applySecrets
 elif [[ ${1} == 'deploy' ]]; then
   createDeployment
-elif [[ ${1} == 'cleanup' ]]; then
-  cleanup
-elif [[ ${1} == 'minikube-config' ]]; then
-  configureMinikubeEnvironment
-elif [[ ${1} == 'pod-info' ]]; then
-  podInfo
-elif [[ ${1} == 'secret-info' ]]; then
-  getSecrets
-elif [[ ${1} == 'build-deploy' ]]; then
-  buildAndDeployLocal
-elif [[ ${1} == 'apply-secrets' ]]; then
-  applySecrets
-elif [[ ${1} == 'delete-secrets' ]]; then
-  deleteSecrets
-elif [[ ${1} == 'setup-local' ]]; then
-  createEnvvars
+elif [[ ${1} == 'service' ]]; then
+  createService
 else
   echo "Argument not recognized, see script args for more info."
 fi
