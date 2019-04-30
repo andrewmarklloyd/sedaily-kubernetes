@@ -24,7 +24,7 @@ function createDeployment() {
   done
   gotpl "./deployment.yaml.tpl" < ${secret_template} > ${deploymentFile}
   ${kube} apply -f ${deploymentFile}
-  # rm ${deploymentFile}
+  rm ${deploymentFile}
   rm ${secret_template}
 }
 
@@ -33,6 +33,8 @@ function createService() {
   minikube -n sedaily service sedaily-api
   ${kube} expose deployment ${deploymentName} --type=LoadBalancer --port=3000 --name=sedaily-devops
   minikube -n sedaily service sedaily-devops
+  ${kube} expose deployment ${deploymentName} --type=LoadBalancer --port=5000 --name=sedaily-frontend
+  minikube -n sedaily service sedaily-frontend
 }
 
 function applySecrets() {

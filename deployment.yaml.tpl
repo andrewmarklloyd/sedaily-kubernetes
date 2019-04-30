@@ -1,4 +1,4 @@
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: sedaily
@@ -21,6 +21,9 @@ spec:
           imagePullPolicy: IfNotPresent
         - name: sedaily-influx
           image: "influxdb:1.4.3"
+          imagePullPolicy: IfNotPresent
+        - name: sedaily-frontend
+          image: "softwaredaily/sedaily-frontend:develop"
           imagePullPolicy: IfNotPresent
         - name: sedaily-devops
           image: "softwaredaily/sedaily-devops:develop"
