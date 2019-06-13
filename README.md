@@ -23,14 +23,13 @@ To be determined:
 - how to populate data without mining Wordpress
 
 ### Deployment
-- This requires .env files from the api and devops projects as well as images built locally.
+- This requires .env files from the api project
 - `cp ../software-engineering-daily-api/.env ./secrets/api.env`
-- `cp ../sedaily-devops/.env ./secrets/devops.env`
 - remove any comments or newlines in the `*.env` files
+- `kubectl create -n namespace.yaml`
 - run `./deploy.sh secrets`
 - run `./deploy.sh deploy`
 
 ### Todo
 - ingress for all services
-- the frontend image is build locally, need to be added to .travis-ci
 - the frontend image uses `localhost:4040` for the API url. The API url needs to be configurable via env var. For minikube development, the url is unknown until you run `kubectl expose deployment sedaily...`.
