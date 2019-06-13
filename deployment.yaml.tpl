@@ -18,25 +18,13 @@ spec:
       containers:
         - name: sedaily-mongo
           image: "softwaredaily/sedaily-mongo:develop"
-          imagePullPolicy: IfNotPresent
-        - name: sedaily-influx
-          image: "influxdb:1.4.3"
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
         - name: sedaily-frontend
           image: "softwaredaily/sedaily-frontend:develop"
-          imagePullPolicy: IfNotPresent
-        - name: sedaily-devops
-          image: "softwaredaily/sedaily-devops:develop"
-          imagePullPolicy: IfNotPresent
-          env:{{ range $key, $value := .secrets.devops }}
-          - name: "{{ $key }}"
-            valueFrom:
-              secretKeyRef:
-                name: devops
-                key: {{ $key }}{{ end }}
+          imagePullPolicy: Always
         - name: sedaily-api
           image: "softwaredaily/sedaily-rest-api:develop"
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           env:{{ range $key, $value := .secrets.api }}
           - name: "{{ $key }}"
             valueFrom:
